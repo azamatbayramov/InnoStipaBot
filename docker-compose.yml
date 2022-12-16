@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  bot:
+    build: .
+    container_name: InnoStipaBot
+    restart: "unless-stopped"
+
+volumes:
+  volume:
