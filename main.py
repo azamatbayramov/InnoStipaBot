@@ -12,7 +12,7 @@ GRADES = {
 
 B_min = 3000
 B_max = 20000
-TOKEN = open("token.txt").readline()
+TOKEN = open("token.txt").readline().strip()
 
 
 async def parse_grades(grades_str: str) -> list[int]:
