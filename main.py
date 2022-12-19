@@ -76,6 +76,11 @@ async def get_emoji(scholarship: int) -> str:
     return emoji.emojize(SCHOLARSHIP_EMOJI[scholarship // 1000], language="alias")
 
 
+@dp.message_handler(commands=["ping"])
+async def handle_help(message: types.Message):
+    await message.answer("pong")
+
+
 @dp.message_handler()
 async def handle_grades(message: types.Message):
     try:
