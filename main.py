@@ -4,12 +4,12 @@ import emoji
 from aiogram import Bot, Dispatcher, types
 
 GRADES = {
-    "A": 5,
-    "B": 4,
-    "C": 3,
-    "D": 2,
-    "P": 5,
-    "F": 2
+    "a": 5,
+    "b": 4,
+    "c": 3,
+    "d": 2,
+    "p": 5,
+    "f": 2
 }
 
 SCHOLARSHIP_EMOJI = {
@@ -24,7 +24,7 @@ SCHOLARSHIP_EMOJI = {
     11: ":unamused:",
     12: ":grimacing:",
     13: ":confused:",
-    14: ":simple_smile:",
+    14: ":sweat_smile:",
     15: ":relieved:",
     16: ":relaxed:",
     17: ":grinning:",
@@ -54,8 +54,8 @@ async def get_gpa(grades: list[int]) -> float:
     return sum(grades) / len(grades)
 
 
-async def calculate_scholarship(gpa: float) -> float:
-    return B_min + (B_max - B_min) * (((gpa - 2) / 3) ** 2.5)
+async def calculate_scholarship(gpa: float) -> int:
+    return round(B_min + (B_max - B_min) * (((gpa - 2) / 3) ** 2.5)) // 100 * 100
 
 
 bot = Bot(token=TOKEN)
@@ -84,12 +84,11 @@ async def handle_help(message: types.Message):
 @dp.message_handler()
 async def handle_grades(message: types.Message):
     try:
-        grades = await parse_grades(message.text)
+        grades = await parse_grades(message.text.lower())
         gpa = await get_gpa(grades)
         scholarship = await calculate_scholarship(gpa)
         emoji_str = await get_emoji(scholarship)
-        rounded_scholarship = round(scholarship) // 100 * 100
-        await message.answer(f"{emoji_str} Your scholarship will be {rounded_scholarship} rubles {emoji_str}")
+        await message.answer(f"{emoji_str} Your scholarship will be {scholarship} rubles {emoji_str}")
     except Exception:
         await message.answer(emoji.emojize("Something went wrong, try again :cry:\n\n"
                                            "If you need help, write me /help :wink:", language="alias"))
