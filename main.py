@@ -1,7 +1,11 @@
 import asyncio
+import os
 
 import emoji
 from aiogram import Bot, Dispatcher, types
+from dotenv import load_dotenv
+
+load_dotenv()
 
 GRADES = {
     "a": 5,
@@ -34,7 +38,7 @@ SCHOLARSHIP_EMOJI = {
 }
 B_min = 3000
 B_max = 20000
-TOKEN = open("token.txt").readline().strip()
+TOKEN = os.environ.get("TOKEN")
 
 
 async def parse_grades(grades_str: str) -> list[int]:
