@@ -36,6 +36,14 @@ SCHOLARSHIP_EMOJI = {
     19: ":blush:",
     20: ":heart_eyes:"
 }
+
+GPA_EMOJI = {
+    2: ":dizzy_face:",
+    3: ":pensive:",
+    4: ":relaxed:",
+    5: ":heart_eyes:"
+}
+
 B_min = 3000
 B_max = 20000
 TOKEN = os.environ.get("TOKEN")
@@ -80,6 +88,10 @@ async def get_emoji(scholarship: int) -> str:
     return emoji.emojize(SCHOLARSHIP_EMOJI[scholarship // 1000], language="alias")
 
 
+async def get_emoji_by_gpa(gpa: float) -> str:
+    return emoji.emojize(GPA_EMOJI[int(gpa)], language="alias")
+
+
 @dp.message_handler(commands=["ping"])
 async def handle_help(message: types.Message):
     await message.answer("pong")
@@ -90,9 +102,11 @@ async def handle_grades(message: types.Message):
     try:
         grades = await parse_grades(message.text.lower())
         gpa = await get_gpa(grades)
+        gpa_emoji = await get_emoji_by_gpa(gpa)
         scholarship = await calculate_scholarship(gpa)
         emoji_str = await get_emoji(scholarship)
-        await message.answer(f"{emoji_str} Your scholarship will be {scholarship} rubles {emoji_str}")
+        await message.answer(
+            f"Your GPA will be {round(gpa, 2)}{gpa_emoji}\nYour scholarship will be {scholarship} rubles {emoji_str}")
     except Exception:
         await message.answer(emoji.emojize("Something went wrong, try again :cry:\n\n"
                                            "If you need help, write me /help :wink:", language="alias"))
