@@ -1,0 +1,5 @@
+{
+  "help": "Hello:wave: I will help you to calculate your scholarship:moneybag:\nJust send me your grades in a row. Example: AABBCP or A2B2CP\n\nProgrammer: @azamatbayramov",
+  "scholarship_message": "Your GPA will be {}{}\nYour scholarship will be {} rubles {}",
+  "something_went_wrong": "Something went wrong, try again :cry:\n\nIf you need help, write me /help :wink:"
+}
