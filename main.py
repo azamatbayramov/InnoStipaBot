@@ -4,6 +4,7 @@ import json
 import emoji
 from aiogram import Bot, Dispatcher, types
 from dotenv import load_dotenv
+import datetime
 
 load_dotenv()
 
@@ -24,11 +25,16 @@ with open("message_texts.json") as file:
 
 B_MIN = SETTINGS["B_MIN"]
 B_MAX = SETTINGS["B_MAX"]
+DATETIME_FORMAT = SETTINGS["DATETIME_FORMAT"]
 TOKEN = os.environ.get("TOKEN")
 
 HELP_MESSAGE = "help"
 SCHOLARSHIP_MESSAGE = "scholarship_message"
 SOMETHING_WENT_WRONG = "something_went_wrong"
+STATE_MESSAGE = "state_message"
+
+start_datetime = datetime.datetime.now().strftime(DATETIME_FORMAT)
+count_of_calculated_scholarships = 0
 
 
 async def convert_grade_to_value(grade: str) -> int:
@@ -45,6 +51,7 @@ async def get_emoji_alias_by_scholarship(scholarship: int) -> str:
 
 async def get_message(message_type, incoming_message_text=None):
     message_with_emoji_aliases: str
+    message_template = MESSAGE_TEXTS[message_type]
 
     if message_type == SCHOLARSHIP_MESSAGE:
         incoming_message_text = incoming_message_text.lower()
@@ -57,13 +64,17 @@ async def get_message(message_type, incoming_message_text=None):
         scholarship = await calculate_scholarship(gpa)
         scholarship_alias = await get_emoji_alias_by_scholarship(scholarship)
 
-        message_template: str = MESSAGE_TEXTS[message_type]
-
         message_with_emoji_aliases = message_template.format(
             round(gpa, 2), gpa_emoji_alias, scholarship, scholarship_alias
         )
+    elif message_type == STATE_MESSAGE:
+        datetime_now = datetime.datetime.now().strftime(DATETIME_FORMAT)
+
+        message_with_emoji_aliases = message_template.format(
+            datetime_now, start_datetime, count_of_calculated_scholarships
+        )
     else:
-        message_with_emoji_aliases = MESSAGE_TEXTS[message_type]
+        message_with_emoji_aliases = message_template
 
     return emoji.emojize(message_with_emoji_aliases, language="alias")
 
@@ -105,11 +116,20 @@ async def handle_ping(message: types.Message):
     await message.answer("pong")
 
 
+@dp.message_handler(commands=["state"])
+async def handle_state(message: types.Message):
+    answer_message = await get_message(STATE_MESSAGE)
+    await message.answer(answer_message)
+
+
 @dp.message_handler()
 async def handle_grades(message: types.Message):
+    global count_of_calculated_scholarships
     try:
         answer_message = await get_message(SCHOLARSHIP_MESSAGE, message.text)
         await message.answer(answer_message)
+
+        count_of_calculated_scholarships += 1
     except Exception as e:
         answer_message = await get_message(SOMETHING_WENT_WRONG)
         await message.answer(answer_message)

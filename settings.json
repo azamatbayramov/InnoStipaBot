@@ -1,4 +1,5 @@
 {
   "B_MIN": 3000,
-  "B_MAX": 20000
+  "B_MAX": 20000,
+  "DATETIME_FORMAT": "%d %b %Y %H:%M:%S"
 }
